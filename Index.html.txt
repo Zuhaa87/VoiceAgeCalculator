@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Age Calculator</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* Clock Section */
+        .clock-section {
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #digital-clock {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>Voice Age Calculator</h1>
+        <p>Calculate your exact age in years, months, days, minutes, and seconds!</p>
+    </header>
+
+    <!-- Live Digital Clock Section -->
+    <section class="clock-section">
+        <h2>Live Digital Clock</h2>
+        <div id="digital-clock"></div>
+    </section>
+
+    <!-- Age Calculator Section -->
+    <section class="calculator-section">
+        <h2>Enter Your Date of Birth</h2>
+        <input type="date" id="dob">
+        <button onclick="calculateAge()">Calculate Age</button>
+        <div id="age-result"></div>
+        <button onclick="speakAge()">?? Listen to Age</button>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>© 2025 Age Calculator | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Live Digital Clock
+        function updateClock() {
+            let now = new Date();
+            let timeString = now.toLocaleTimeString();
+            document.getElementById("digital-clock").textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Age Calculator Function
+        function calculateAge() {
+            let dob = document.getElementById("dob").value;
+            if (!dob) {
+                alert("Please enter your date of birth.");
+                return;
+            }
+
+            let birthDate = new Date(dob);
+            let today = new Date();
+
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            let days = today.getDate() - birthDate.getDate();
+
+            if (months < 0 || (months === 0 && days < 0)) {
+                years--;
+                months += (months < 0) ? 12 : 0;
+            }
+            if (days < 0) {
+                let lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += lastMonth.getDate();
+            }
+
+            let ageInWeeks = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24 * 7));
+            let ageInMinutes = Math.floor((today - birthDate) / (1000 * 60));
+            let ageInSeconds = Math.floor((today - birthDate) / 1000);
+
+            document.getElementById("age-result").innerHTML = `
+                <p><strong>Years:</strong> ${years}</p>
+                <p><strong>Months:</strong> ${months}</p>
+                <p><strong>Days:</strong> ${ageInWeeks}</p>
+                <p><strong>Weeks:</strong> ${days}</p>
+                <p><strong>Minutes:</strong> ${ageInMinutes}</p>
+                <p><strong>Seconds:</strong> ${ageInSeconds}</p>
+            `;
+        }
+
+        // Text-to-Speech for Age Announcement
+        function speakAge() {
+            let resultDiv = document.getElementById("age-result");
+            if (!resultDiv.innerHTML) {
+                alert("Please calculate your age first!");
+                return;
+            }
+
+            let text = resultDiv.innerText;
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = "en-US";
+            speech.rate = 1;
+            speech.pitch = 1;
+            
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
+</body>
+</html>
